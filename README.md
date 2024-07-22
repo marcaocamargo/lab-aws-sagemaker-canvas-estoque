@@ -1,47 +1,63 @@
 # 📊 Previsão de Estoque Inteligente na AWS com [SageMaker Canvas](https://aws.amazon.com/pt/sagemaker/canvas/)
 
-Bem-vindo ao desafio de projeto "Previsão de Estoque Inteligente na AWS com SageMaker Canvas. Neste Lab DIO, você aprenderá a usar o SageMaker Canvas para criar previsões de estoque baseadas em Machine Learning (ML). Siga os passos abaixo para completar o desafio!
-
-## 📋 Pré-requisitos
-
-Antes de começar, certifique-se de ter uma conta na AWS. Se precisar de ajuda para criar sua conta, confira nosso repositório [AWS Cloud Quickstart](https://github.com/digitalinnovationone/aws-cloud-quickstart).
-
-
-## 🎯 Objetivos Deste Desafio de Projeto (Lab)
-
-![image](https://github.com/digitalinnovationone/lab-aws-sagemaker-canvas-estoque/assets/730492/72f5c21f-5562-491e-aa42-2885a3184650)
-
-- Dê um fork neste projeto e reescreva este `README.md`. Sinta-se à vontade para detalhar todo o processo de criação do seu Modelo de ML para uma "Previsão de Estoque Inteligente".
-- Para isso, siga o [passo a passo] descrito a seguir e evolua as suas habilidades em ML no-code com o Amazon SageMaker Canvas.
-- Ao concluir, envie a URL do seu repositório com a solução na plataforma da DIO.
-
+Bem-vindo ao desafio de projeto "Previsão de Estoque Inteligente na AWS com SageMaker Canvas".
 
 ## 🚀 Passo a Passo
 
-### 1. Selecionar Dataset
+### 1. Selecionando o Dataset
 
--   Navegue até a pasta `datasets` deste repositório. Esta pasta contém os datasets que você poderá escolher para treinar e testar seu modelo de ML. Sinta-se à vontade para gerar/enriquecer seus próprios datasets, quanto mais você se engajar, mais relevante esse projeto será em seu portfólio.
--   Escolha o dataset que você usará para treinar seu modelo de previsão de estoque.
--   Faça o upload do dataset no SageMaker Canvas.
+- Escolhi usar o dataset fornecido pela DIO na pasta `datasets` intitulado dataset-1000-com-preco-promocional-e-renovacao-estoque para projeção do projeto de **_Previsão de Estoque Inteligente na AWS com Sagemaker Canvas._**
+> Acabei realizando o upload no Canvas com um nome mais simples:
+![Imgur](https://imgur.com/Y9oMjiY.png)
 
-### 2. Construir/Treinar
+### 2. Construindo e Treinando meu modelo
 
--   No SageMaker Canvas, importe o dataset que você selecionou.
--   Configure as variáveis de entrada e saída de acordo com os dados.
--   Inicie o treinamento do modelo. Isso pode levar algum tempo, dependendo do tamanho do dataset.
+- Realizei a configuração inicial do meu modelo apontando como `target` a coluna QUANTIDADE_ESTOQUE.
+> Essa é a versão 1 do modelo criado:
+![Imgur](https://imgur.com/zqKZ4oI.png)
 
-### 3. Analisar
+- Configurei o modelo selecionando o ID_PRODUTO como `ITEM ID` para identificação de valor único.
+- O indicativo para a coluna que contém `timestamps` ele reconheu automáticamente, apenas mantive.
+- Alterei para a projeção me mostrar o os 3 próximos dias em vez de somente 1.
+- Adicionei para ele tomar como base os feriados nacionais no Brasil.
+> Segue configurações realizadar:
+![Imgur](https://imgur.com/QXneugO.png)
 
--   Após o treinamento, examine as métricas de performance do modelo.
--   Verifique as principais características que influenciam as previsões.
--   Faça ajustes no modelo se necessário e re-treine até obter um desempenho satisfatório.
+### 3. Analisando o modelo
 
-### 4. Prever
+- Após ajustes no modelo, tivemos as métricas em `Quick Build` um pouco altas, mesmo com treinamentos, mas mantive assim.
+- Temos o `Avg wQL` que é a perda média ponderada de quantis, é uma previsão calculando como um todo a média de precisão de pontos de distribuição, formando o P10, P50 e P90. Quando mais baixo esse valor, mais preciso é o modelo.
+- Temos o `MAPE` que é o erro percentual médio absoluto, que seria a diferença percentual entre o valor médio previsto com o valor real. O valor quanto mais próximo de `0`, melhor, sendo `MAPE=0` como um modelo perfeito e sem erros.
+- O `WAPW` é o erro percentual absoluto ponderado, ond emede o desvio geral dos valores previstos em relação aos valores observados e é definido pela soma do erro absoluto normalizado pela soma da meta absoluta. Um valor mais baixo indica um modelo mais preciso com `WAPE=0` como um modelo perfeito e sem erros.
+- O `RMSE` é a raiz quadrada dos erros quadráticos médios. Um `RMSE` mais baixo indica um modelo mais preciso com `RMSE=0` como um modelo perfeito e sem erros.
+- O `MASE` é a média do erro absoluto da previsão normalizada pelo erro médio absoluto de um método simples de previsão de linha de base. Um valor mais baixo indica um modelo mais preciso com `MASE < 1` como um modelo estimado como melhor que a linha de base e um `MASE > 1` como um modelo estimado como pior que a linha de base.
+> Resultado do meu modelo, mesmo o RMSE estando alto, foi o mais próximo que cheguei, **precisarai de mais tempo e treinamento.**
+![Imgur](https://imgur.com/lZ5fZrm.png)
 
--   Use o modelo treinado para fazer previsões de estoque.
--   Exporte os resultados e analise as previsões geradas.
--   Documente suas conclusões e qualquer insight obtido a partir das previsões.
+> Aqui conseguimos analisar também que as colunas `PRECO` com  `17,34%` e `HOLIDAY_BR` com `1,29%` tiveram impactos na projeção.
+![Imgur](https://imgur.com/sNvTNVH.png)
 
-## 🤔 Dúvidas?
+### 4. Previsão Final
 
-Esperamos que esta experiência tenha sido enriquecedora e que você tenha aprendido mais sobre Machine Learning aplicado a problemas reais. Se tiver alguma dúvida, não hesite em abrir uma issue neste repositório ou entrar em contato com a equipe da DIO.
+-   Usando o modelo treinado, fizemos as previsões de estoque.
+-   Analisamos dois produtos para termos base e ideais.
+-   Começando com o `Item 1014` onde temos uma demanda histórica dele iniciado em `61` e no dia seguinte já está em `51` e depois em `36` e as projeções para os 3 próximos dias em `P10, P50 e P90`
+> Projeção em formato de tabela:
+![Imgur](https://imgur.com/6Whiwes.png)
+
+> Projeção em formato gráfico:
+![Imgur](https://imgur.com/u6cJtJJ.png)
+
+- Aqui temos o `Item 1021` onde temos uma demanda histórica dele iniciado em `73` e no dia seguinte já está em `55` e depois em `36` e as projeções para os 3 próximos dias em `P10, P50 e P90`
+> Projeção em formato de tabela:
+![Imgur](https://imgur.com/8IN0o9U.png)
+
+> Projeção em formato gráfico:
+![Imgur](https://imgur.com/zBllomf.png)
+
+## Explicando P10, P50 e P90
+
+- Esses quantis são usados ​​para levar em conta a incerteza das previsões. Por padrão, as previsões são geradas para 0,1 (P10), 0,5 (P50) e 0,9 (P90).
+  - P10 LINHA ROSA (Reflete um cenário pessimista)
+  - P50 LINHA VERDE(Reflete um cenário neutro)
+  - P90 LINHA AMARELO(Reflete um cenário otimista)
